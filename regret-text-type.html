@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>후회 문자 수습 유형은?</title>
+  <meta property="og:title" content="후회 문자 수습 유형은?" />
+  <meta property="og:description" content="보내고 나서 아 씨발 했던 그 문자 💬" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --card: #13131a;
+      --card-hover: #1a1a25;
+      --accent1: #7c5cfc;
+      --accent2: #ff6b9d;
+      --accent3: #00d4aa;
+      --accent4: #ffd166;
+      --text: #e8e6f0;
+      --text-dim: #8a879a;
+      --glass: rgba(124,92,252,0.08);
+      --border: rgba(124,92,252,0.15);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* orbs */
+    .bg-orbs { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+    .orb {
+      position: absolute; border-radius: 50%;
+      filter: blur(100px); opacity: 0.3;
+      animation: orbFloat 8s ease-in-out infinite;
+    }
+    .orb-1 { width: 400px; height: 400px; background: var(--accent1); top: -100px; left: -100px; }
+    .orb-2 { width: 350px; height: 350px; background: var(--accent2); bottom: -80px; right: -80px; animation-delay: -3s; }
+    .orb-3 { width: 300px; height: 300px; background: var(--accent3); top: 50%; left: 50%; transform: translate(-50%,-50%); animation-delay: -5s; opacity: 0.15; }
+    @keyframes orbFloat {
+      0%,100% { transform: translate(0,0) scale(1); }
+      33%      { transform: translate(30px,-20px) scale(1.05); }
+      66%      { transform: translate(-20px,30px) scale(0.95); }
+    }
+
+    .container {
+      position: relative; z-index: 1;
+      max-width: 520px; margin: 0 auto; padding: 20px;
+      min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+    }
+
+    /* screens */
+    .screen { display: none; animation: fadeUp 0.5s ease; }
+    .screen.active { display: flex; flex-direction: column; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── intro ── */
+    .intro-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--glass); border: 1px solid var(--border);
+      padding: 6px 14px; border-radius: 100px; font-size: 12px;
+      color: var(--accent1); width: fit-content; margin-bottom: 24px;
+      font-family: 'Outfit', sans-serif; letter-spacing: 0.5px;
+    }
+    .intro-badge .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent3); animation: blink 2s infinite;
+    }
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    .intro-emoji { font-size: 64px; margin-bottom: 20px; animation: bounceIn 0.6s ease; }
+
+    .intro-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 38px; font-weight: 800; line-height: 1.2; margin-bottom: 14px;
+      background: linear-gradient(135deg, #fff 0%, var(--accent1) 50%, var(--accent2) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .intro-desc {
+      font-size: 15px; color: var(--text-dim); line-height: 1.7; margin-bottom: 28px;
+    }
+    .intro-stats {
+      display: flex; gap: 10px; margin-bottom: 32px;
+    }
+    .stat {
+      flex: 1; background: var(--glass); border: 1px solid var(--border);
+      border-radius: 16px; padding: 16px; text-align: center;
+    }
+    .stat-num {
+      font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 700;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .stat-label { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+
+    .btn-start {
+      width: 100%; padding: 18px; border: none; border-radius: 16px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 17px; font-weight: 700; cursor: pointer;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      color: #fff; position: relative; overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+    .btn-start:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,92,252,0.4); }
+    .btn-start::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%);
+      transform: translateX(-100%); animation: shimmer 3s infinite;
+    }
+    @keyframes shimmer { 100% { transform: translateX(100%); } }
+
+    /* ── quiz ── */
+    .progress-wrap { margin-bottom: 28px; }
+    .progress-info {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+    }
+    .progress-label { font-family: 'Outfit', sans-serif; font-size: 13px; color: var(--text-dim); }
+    .progress-num   { font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700; color: var(--accent1); }
+    .progress-bar   { width: 100%; height: 6px; background: rgba(124,92,252,0.12); border-radius: 100px; overflow: hidden; }
+    .progress-fill  {
+      height: 100%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .q-emoji { font-size: 48px; margin-bottom: 14px; animation: bounceIn 0.5s ease; }
+    @keyframes bounceIn {
+      0%   { transform: scale(0); }
+      60%  { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    .q-text { font-size: 20px; font-weight: 700; line-height: 1.5; margin-bottom: 24px; }
+
+    .options { display: flex; flex-direction: column; gap: 12px; }
+    .opt-btn {
+      width: 100%; padding: 16px 20px;
+      border: 1px solid var(--border); border-radius: 14px;
+      background: var(--card); font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; color: var(--text); cursor: pointer;
+      text-align: left; transition: all 0.25s;
+      position: relative; overflow: hidden;
+    }
+    .opt-btn::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .opt-btn span { position: relative; z-index: 1; }
+    @media (hover: hover) {
+      .opt-btn:hover { border-color: var(--accent1); transform: translateX(6px); box-shadow: 0 4px 20px rgba(124,92,252,0.15); }
+      .opt-btn:hover::before { opacity: 0.12; }
+    }
+    .opt-btn:active { border-color: var(--accent1); transform: translateX(6px) scale(0.98); }
+    .opt-btn:active::before { opacity: 0.12; }
+
+    /* ── loading ── */
+    #loading { align-items: center; justify-content: center; text-align: center; min-height: 60vh; }
+    .loader-ring {
+      width: 80px; height: 80px; border-radius: 50%;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent1); border-right-color: var(--accent2);
+      animation: spin 1s linear infinite; margin-bottom: 28px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-emoji { font-size: 48px; margin-bottom: 20px; animation: blink 1.5s ease-in-out infinite; }
+    .loading-text { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+    .loading-sub   { font-size: 13px; color: var(--text-dim); margin-bottom: 32px; animation: blink 2s infinite; }
+    .loading-prog-bar {
+      width: 240px; height: 4px; background: rgba(124,92,252,0.15);
+      border-radius: 100px; overflow: hidden;
+    }
+    .loading-prog-fill {
+      height: 100%; width: 0%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      transition: width 2.3s cubic-bezier(0.4,0,0.6,1);
+    }
+
+    /* ── result ── */
+    #result { align-items: center; padding: 20px 0; }
+    .result-card {
+      width: 100%; border-radius: 24px; overflow: hidden;
+      background: var(--card); border: 1px solid var(--border); margin-bottom: 16px;
+    }
+    .result-hero {
+      padding: 40px 28px 24px; text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .result-hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      opacity: 0.08;
+    }
+    .result-type-badge {
+      display: inline-block; padding: 4px 14px; border-radius: 100px;
+      font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 600;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      background: rgba(255,255,255,0.1); color: var(--accent4);
+      margin-bottom: 12px; position: relative;
+    }
+    .result-emoji { font-size: 64px; margin-bottom: 12px; position: relative; }
+    .result-name {
+      font-family: 'Outfit', sans-serif; font-size: 28px; font-weight: 800;
+      position: relative;
+      background: linear-gradient(135deg, #fff, var(--accent1));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .result-subtitle { font-size: 13px; color: var(--text-dim); margin-top: 6px; position: relative; }
+
+    .result-body { padding: 24px 24px 28px; }
+    .result-desc { font-size: 14px; line-height: 1.8; color: var(--text-dim); margin-bottom: 24px; word-break: keep-all; }
+
+    .trait-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
+    .trait {
+      background: var(--glass); border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px; text-align: center;
+    }
+    .trait-icon { font-size: 22px; margin-bottom: 6px; }
+    .trait-name { font-size: 12px; font-weight: 600; color: var(--text); }
+    .trait-pct  { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+    .trait-bar  { margin-top: 8px; height: 4px; background: rgba(255,255,255,0.06); border-radius: 100px; overflow: hidden; }
+    .trait-fill {
+      height: 100%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent3));
+      transition: width 1.5s cubic-bezier(0.4,0,0.2,1); width: 0;
+    }
+
+    .compat-section { margin-bottom: 4px; }
+    .compat-title { font-size: 12px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+    .compat-row { display: flex; gap: 8px; }
+    .compat-tag { padding: 6px 14px; border-radius: 100px; font-size: 12px; background: var(--glass); border: 1px solid var(--border); }
+    .compat-tag.good { border-color: rgba(0,212,170,0.3); color: var(--accent3); }
+    .compat-tag.bad  { border-color: rgba(255,107,157,0.2); color: var(--accent2); }
+
+    .btn-share {
+      width: 100%; padding: 16px; border: none; border-radius: 14px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; font-weight: 700; cursor: pointer;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      color: #fff; margin-bottom: 10px;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+    .btn-share:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,92,252,0.4); }
+
+    .btn-retry {
+      width: 100%; padding: 16px; border: 1px solid var(--border);
+      border-radius: 14px; background: var(--card);
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; font-weight: 600; color: var(--text); cursor: pointer;
+      transition: all 0.25s;
+    }
+    .btn-retry:hover { border-color: var(--accent1); background: var(--card-hover); }
+
+    .footer { text-align: center; margin-top: 16px; font-size: 11px; color: var(--text-dim); opacity: 0.4; }
+  </style>
+</head>
+<body>
+
+<div class="bg-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<div class="container">
+
+  <!-- INTRO -->
+  <div class="screen active" id="intro">
+    <div class="intro-badge"><span class="dot"></span> <span id="intro-badge-text"></span></div>
+    <div class="intro-emoji" id="intro-emoji"></div>
+    <h1 class="intro-title" id="intro-title"></h1>
+    <p class="intro-desc" id="intro-desc"></p>
+    <div class="intro-stats">
+      <div class="stat"><div class="stat-num" id="stat-q"></div><div class="stat-label">질문</div></div>
+      <div class="stat"><div class="stat-num" id="stat-r"></div><div class="stat-label">유형</div></div>
+      <div class="stat"><div class="stat-num">2분</div><div class="stat-label">소요</div></div>
+    </div>
+    <button class="btn-start" onclick="startQuiz()">테스트 시작하기 →</button>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="screen" id="quiz">
+    <div class="progress-wrap">
+      <div class="progress-info">
+        <span class="progress-label">PROGRESS</span>
+        <span class="progress-num" id="prog-num">1 / 8</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
+    </div>
+    <div class="q-emoji" id="q-emoji"></div>
+    <div class="q-text"  id="q-text"></div>
+    <div class="options" id="options"></div>
+  </div>
+
+  <!-- LOADING -->
+  <div class="screen" id="loading">
+    <div class="loader-ring"></div>
+    <div class="loading-emoji" id="loading-emoji"></div>
+    <div class="loading-text">AI가 분석 중이에요...</div>
+    <div class="loading-sub">당신의 유형을 해독하는 중 🧬</div>
+    <div class="loading-prog-bar">
+      <div class="loading-prog-fill" id="loading-prog-fill"></div>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="screen" id="result"></div>
+
+</div>
+
+<script id="quiz-data" type="application/json">
+{
+  "meta": {
+    "title": "후회 문자 수습 유형은?",
+    "subtitle": "보내고 나서 아 씨발 했던 그 문자 💬",
+    "badge": "2026 문자 수습 심리테스트",
+    "emoji": "💬",
+    "questionCount": 8,
+    "resultCount": 6,
+    "shareUrl": "https://self-persona-test.vercel.app/regret-text-type.html",
+    "resultBadge": "YOUR TEXT PANIC TYPE"
+  },
+
+  "scoreKeys": ["delete", "double", "explain", "ghost", "humor", "bold"],
+
+  "questions": [
+    {
+      "emoji": "😱",
+      "text": "문자 보내고 '아 이거 아닌데' 깨달은 순간, 첫 반응은?",
+      "options": [
+        { "text": "🫣 손이 떨리면서 화면 뒤집어 버림", "scores": { "ghost": 3, "delete": 1 } },
+        { "text": "🔄 취소 취소 취소!! 카톡 삭제 광클", "scores": { "delete": 3, "ghost": 1 } },
+        { "text": "😶 그냥... 멍하니 화면 바라봄", "scores": { "explain": 2, "double": 2 } },
+        { "text": "🤣 ㅋㅋㅋㅋ 아 진짜 내가 왜 이래", "scores": { "humor": 3, "bold": 1 } }
+      ]
+    },
+    {
+      "emoji": "⏱️",
+      "text": "상대방이 읽었는데 답장이 없을 때 넌?",
+      "options": [
+        { "text": "💀 읽씹... 나 죽어도 돼", "scores": { "ghost": 3, "delete": 1 } },
+        { "text": "📱 추가 문자 연속 발사해서 덮어버림", "scores": { "double": 3, "humor": 1 } },
+        { "text": "🗣️ 먼저 '방금 그 문자 설명하면~' 타이핑", "scores": { "explain": 3, "bold": 1 } },
+        { "text": "😎 쿨한 척 그냥 기다림 (내면은 지옥)", "scores": { "bold": 2, "ghost": 2 } }
+      ]
+    },
+    {
+      "emoji": "🗑️",
+      "text": "카카오톡 메시지 삭제 기능, 당신에게는?",
+      "options": [
+        { "text": "🙏 갓 기능... 없었으면 못 살았음", "scores": { "delete": 3, "ghost": 1 } },
+        { "text": "🤔 삭제해도 상대는 알텐데 의미 있나?", "scores": { "explain": 2, "bold": 2 } },
+        { "text": "😅 삭제하면 더 티나서 그냥 놔둠", "scores": { "double": 2, "humor": 2 } },
+        { "text": "💪 나는 내가 한 말 책임짐! 안 씀", "scores": { "bold": 3, "explain": 1 } }
+      ]
+    },
+    {
+      "emoji": "📝",
+      "text": "수습 문자를 쓴다면 어떤 스타일?",
+      "options": [
+        { "text": "🤣 'ㅋㅋ 아 그거 잘못 보낸 거' 가볍게 넘김", "scores": { "humor": 3, "double": 1 } },
+        { "text": "📖 상황 설명 장문 A4 한 장 각오", "scores": { "explain": 3, "bold": 1 } },
+        { "text": "🌊 아무 일 없었다는 듯 다른 얘기 꺼냄", "scores": { "double": 3, "ghost": 1 } },
+        { "text": "😤 '내 진심이었음' 오히려 더 솔직하게 씀", "scores": { "bold": 3, "explain": 1 } }
+      ]
+    },
+    {
+      "emoji": "😰",
+      "text": "실수 문자를 보낸 상대가 가까운 친구라면?",
+      "options": [
+        { "text": "📞 바로 전화해서 '아 그거 말인데~' 설명", "scores": { "explain": 3, "bold": 1 } },
+        { "text": "😂 밈이나 짤 보내서 분위기 환기", "scores": { "humor": 3, "double": 1 } },
+        { "text": "🤝 친구니까 알아서 이해하겠지... 조용히 있음", "scores": { "ghost": 2, "delete": 2 } },
+        { "text": "🙈 어차피 다 알아 그냥 쿨하게 인정", "scores": { "bold": 3, "humor": 1 } }
+      ]
+    },
+    {
+      "emoji": "💼",
+      "text": "상대가 직장 상사나 교수님이라면?",
+      "options": [
+        { "text": "☠️ 폰 던지고 싶음... 어떡해 진짜", "scores": { "ghost": 3, "delete": 1 } },
+        { "text": "🔥 삭제 후 '제가 잘못 보냈습니다' 공식 멘트", "scores": { "delete": 2, "explain": 2 } },
+        { "text": "📧 수습 문자 초안 10번 고쳐서 발송", "scores": { "explain": 3, "bold": 1 } },
+        { "text": "😂 '하하 죄송합니다~' 웃음으로 무마", "scores": { "humor": 3, "double": 1 } }
+      ]
+    },
+    {
+      "emoji": "💘",
+      "text": "좋아하는 사람한테 실수 문자를 보냈다면?!",
+      "options": [
+        { "text": "🫠 나 그냥 지구를 떠나고 싶음", "scores": { "ghost": 3, "delete": 1 } },
+        { "text": "❤️ 이참에 고백으로 승화시켜버림", "scores": { "bold": 3, "humor": 1 } },
+        { "text": "📱 연속 문자 폭탄으로 묻어버리기", "scores": { "double": 3, "explain": 1 } },
+        { "text": "💬 '오해 없길 바라며...' 해명 장문 발송", "scores": { "explain": 3, "ghost": 1 } }
+      ]
+    },
+    {
+      "emoji": "🔮",
+      "text": "나중에 그 일을 돌아봤을 때 나는?",
+      "options": [
+        { "text": "😤 아직도 생각하면 이불킥 가능", "scores": { "ghost": 2, "delete": 2 } },
+        { "text": "🤣 웃긴 에피소드로 친구들한테 얘기함", "scores": { "humor": 3, "bold": 1 } },
+        { "text": "🧐 그때 왜 그랬는지 스스로 분석함", "scores": { "explain": 3, "double": 1 } },
+        { "text": "💪 뭐 어때~ 살다 보면 그럴 수 있지", "scores": { "bold": 3, "humor": 1 } }
+      ]
+    }
+  ],
+
+  "results": {
+    "delete_ghost": {
+      "emoji": "🗑️",
+      "name": "증거 인멸러",
+      "sub": "Evidence Eraser",
+      "color": "#ff6b6b",
+      "desc": "삭제, 철회, 없던 일로. 당신의 수습 전략은 흔적을 남기지 않는 것! 카톡 삭제 기능은 당신을 위해 만들어진 기능이에요. 상대방도 눈치채는 걸 알지만... 일단 삭제부터 하고 봅니다.",
+      "traits": [
+        { "icon": "🗑️", "name": "삭제 반응속도", "pct": 95 },
+        { "icon": "😱", "name": "패닉 지수", "pct": 90 },
+        { "icon": "🫣", "name": "회피력", "pct": 85 },
+        { "icon": "💪", "name": "뻔뻔함", "pct": 22 }
+      ],
+      "good": "웃음 전환러",
+      "bad": "진심 돌직구러"
+    },
+    "double_humor": {
+      "emoji": "📱",
+      "name": "문자 덮기 장인",
+      "sub": "Text Flood Master",
+      "color": "#ffa94d",
+      "desc": "실수 문자? 그냥 다른 문자 100개로 덮으면 되지! 연속 문자 폭탄으로 상황을 흐리는 데 특화된 당신. 짤이나 밈으로 분위기를 환기하는 것도 잘 해서 주변에서 '이 사람 왜 이렇게 빠르지?' 싶어 합니다.",
+      "traits": [
+        { "icon": "📱", "name": "연속 발사력", "pct": 93 },
+        { "icon": "😅", "name": "상황 흐리기", "pct": 88 },
+        { "icon": "🎭", "name": "분위기 전환", "pct": 82 },
+        { "icon": "🧘", "name": "침착함", "pct": 25 }
+      ],
+      "good": "증거 인멸러",
+      "bad": "논리 해명러"
+    },
+    "explain_bold": {
+      "emoji": "📝",
+      "name": "논리 해명러",
+      "sub": "Logical Explainer",
+      "color": "#74c0fc",
+      "desc": "오해는 참을 수 없어! 상황 설명 장문 초안을 몇 번씩 고쳐 쓰며 완벽한 수습 문자를 만드는 당신. 가끔 해명이 더 길어져서 상대를 당황하게 만들기도 하지만, 진심은 통한다고 믿어요.",
+      "traits": [
+        { "icon": "📝", "name": "해명력", "pct": 95 },
+        { "icon": "🧠", "name": "논리력", "pct": 90 },
+        { "icon": "💬", "name": "표현력", "pct": 85 },
+        { "icon": "😂", "name": "유머감각", "pct": 30 }
+      ],
+      "good": "진심 돌직구러",
+      "bad": "문자 덮기 장인"
+    },
+    "ghost_delete": {
+      "emoji": "👻",
+      "name": "잠수함 모드",
+      "sub": "Submarine Ghost",
+      "color": "#a9a9ff",
+      "desc": "폰 뒤집기, 알림 끄기, 존재 자체를 숨기기. 당신의 수습법은 일단 잠수! 시간이 지나면 해결되겠지 하고 기다리지만, 나중에 만났을 때 더 어색해지는 아이러니를 알면서도 반복합니다.",
+      "traits": [
+        { "icon": "👻", "name": "잠수력", "pct": 95 },
+        { "icon": "🫣", "name": "회피 본능", "pct": 92 },
+        { "icon": "⏳", "name": "시간 떼우기", "pct": 80 },
+        { "icon": "😤", "name": "적극성", "pct": 20 }
+      ],
+      "good": "증거 인멸러",
+      "bad": "진심 돌직구러"
+    },
+    "humor_double": {
+      "emoji": "😂",
+      "name": "웃음 전환러",
+      "sub": "Laugh It Off Type",
+      "color": "#63e6be",
+      "desc": "인생은 웃으면서 넘어가는 거야! 실수 문자 후 ㅋㅋ 하나로 상황을 가볍게 만드는 마법사. 주변 사람들이 당신 덕분에 불편한 상황도 웃음으로 넘어가지만, 가끔은 진지하게 받아들여지고 싶기도 해요.",
+      "traits": [
+        { "icon": "😂", "name": "유머력", "pct": 95 },
+        { "icon": "🎭", "name": "분위기 메이커", "pct": 90 },
+        { "icon": "⚡", "name": "순발력", "pct": 87 },
+        { "icon": "😶", "name": "진지함", "pct": 28 }
+      ],
+      "good": "문자 덮기 장인",
+      "bad": "잠수함 모드"
+    },
+    "bold_explain": {
+      "emoji": "💪",
+      "name": "진심 돌직구러",
+      "sub": "Bold & Honest Type",
+      "color": "#ff9fb2",
+      "desc": "내가 한 말인데 뭐가 부끄러워! 실수 문자도 진심이었다며 오히려 더 당당하게 나가는 유형. 때로는 그 태도가 상대를 감동시키기도 하고, 때로는 상황을 더 크게 만들기도 하지만 후회는 없습니다.",
+      "traits": [
+        { "icon": "💪", "name": "뻔뻔함(긍정적)", "pct": 95 },
+        { "icon": "❤️", "name": "솔직함", "pct": 92 },
+        { "icon": "🔥", "name": "자기확신", "pct": 88 },
+        { "icon": "🫣", "name": "수줍음", "pct": 20 }
+      ],
+      "good": "논리 해명러",
+      "bad": "잠수함 모드"
+    }
+  },
+
+  "combos": {
+    "delete,ghost": "delete_ghost",
+    "ghost,delete": "delete_ghost",
+    "double,humor": "double_humor",
+    "humor,double": "double_humor",
+    "explain,bold": "explain_bold",
+    "bold,explain": "explain_bold",
+    "ghost,explain": "ghost_delete",
+    "explain,ghost": "ghost_delete",
+    "humor,bold": "humor_double",
+    "bold,humor": "humor_double",
+    "delete,explain": "delete_ghost",
+    "explain,delete": "explain_bold",
+    "delete,double": "delete_ghost",
+    "double,delete": "double_humor",
+    "delete,humor": "humor_double",
+    "humor,delete": "humor_double",
+    "delete,bold": "bold_explain",
+    "bold,delete": "bold_explain",
+    "double,explain": "double_humor",
+    "explain,double": "explain_bold",
+    "double,ghost": "ghost_delete",
+    "ghost,double": "ghost_delete",
+    "double,bold": "bold_explain",
+    "bold,double": "bold_explain",
+    "explain,humor": "explain_bold",
+    "humor,explain": "humor_double",
+    "ghost,humor": "ghost_delete",
+    "humor,ghost": "humor_double",
+    "ghost,bold": "ghost_delete",
+    "bold,ghost": "bold_explain",
+    "delete,delete": "delete_ghost",
+    "double,double": "double_humor",
+    "explain,explain": "explain_bold",
+    "ghost,ghost": "ghost_delete",
+    "humor,humor": "humor_double",
+    "bold,bold": "bold_explain",
+    "explain,bold": "explain_bold",
+    "bold,explain": "explain_bold",
+    "humor,ghost": "humor_double",
+    "ghost,humor": "ghost_delete",
+    "bold,ghost": "bold_explain",
+    "delete,humor": "humor_double"
+  }
+}
+</script>
+<script>
+var DATA = JSON.parse(document.getElementById('quiz-data').textContent);
+var currentQ = 0;
+var scores = {};
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+  var el = document.getElementById(id);
+  el.classList.add('active');
+  el.style.animation = 'none';
+  el.offsetHeight;
+  el.style.animation = '';
+}
+
+function init() {
+  var m = DATA.meta;
+  document.getElementById('intro-badge-text').textContent = m.badge;
+  document.getElementById('intro-emoji').textContent      = m.emoji;
+  document.getElementById('intro-title').textContent      = m.title;
+  document.getElementById('intro-desc').textContent       = m.subtitle;
+  document.getElementById('stat-q').textContent           = m.questionCount;
+  document.getElementById('stat-r').textContent           = m.resultCount;
+  document.getElementById('loading-emoji').textContent    = m.emoji;
+}
+
+function startQuiz() {
+  currentQ = 0;
+  scores = {};
+  DATA.scoreKeys.forEach(function(k) { scores[k] = 0; });
+  show('quiz');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  var q   = DATA.questions[currentQ];
+  var tot = DATA.questions.length;
+
+  document.getElementById('prog-num').textContent   = (currentQ + 1) + ' / ' + tot;
+  document.getElementById('prog-fill').style.width  = (currentQ / tot * 100) + '%';
+  document.getElementById('q-emoji').textContent    = q.emoji;
+  document.getElementById('q-text').textContent     = q.text;
+
+  var box = document.getElementById('options');
+  box.innerHTML = '';
+  q.options.forEach(function(opt, i) {
+    var btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerHTML = '<span>' + opt.text + '</span>';
+    btn.style.animationDelay = (i * 0.08) + 's';
+    btn.onclick = (function(s) { return function() { pick(s); }; })(opt.scores);
+    box.appendChild(btn);
+  });
+}
+
+function pick(scoreMap) {
+  Object.keys(scoreMap).forEach(function(k) { scores[k] = (scores[k] || 0) + scoreMap[k]; });
+  currentQ++;
+  if (currentQ < DATA.questions.length) {
+    renderQuestion();
+  } else {
+    document.getElementById('prog-fill').style.width = '100%';
+    setTimeout(function() {
+      show('loading');
+      var fill = document.getElementById('loading-prog-fill');
+      fill.style.width = '0%';
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+          fill.style.width = '100%';
+        });
+      });
+      setTimeout(showResult, 2400);
+    }, 300);
+  }
+}
+
+function showResult() {
+  var sorted = Object.keys(scores).map(function(k) { return [k, scores[k]]; });
+  sorted.sort(function(a, b) { return b[1] - a[1]; });
+  var top2key = [sorted[0][0], sorted[1][0]].sort().join(',');
+  var key = DATA.combos[top2key] || Object.keys(DATA.results)[0];
+  var res = DATA.results[key];
+  var m   = DATA.meta;
+
+  var el = document.getElementById('result');
+  var traitsHTML = '';
+  res.traits.forEach(function(t) {
+    traitsHTML +=
+      '<div class="trait">' +
+        '<div class="trait-icon">' + t.icon + '</div>' +
+        '<div class="trait-name">' + t.name + '</div>' +
+        '<div class="trait-pct">' + t.pct + '%</div>' +
+        '<div class="trait-bar"><div class="trait-fill" data-pct="' + t.pct + '"></div></div>' +
+      '</div>';
+  });
+
+  el.innerHTML =
+    '<div class="result-card">' +
+      '<div class="result-hero">' +
+        '<div class="result-type-badge">' + m.resultBadge + '</div>' +
+        '<div class="result-emoji">' + res.emoji + '</div>' +
+        '<div class="result-name">' + res.name + '</div>' +
+        '<div class="result-subtitle">' + res.sub + '</div>' +
+      '</div>' +
+      '<div class="result-body">' +
+        '<p class="result-desc">' + res.desc + '</p>' +
+        '<div class="trait-grid">' + traitsHTML + '</div>' +
+        '<div class="compat-section">' +
+          '<div class="compat-title">궁합</div>' +
+          '<div class="compat-row">' +
+            '<span class="compat-tag good">💚 ' + res.good + '</span>' +
+            '<span class="compat-tag bad">💔 ' + res.bad + '</span>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    '<button class="btn-share" onclick="share()">결과 공유하기 📤</button>' +
+    '<button class="btn-retry" onclick="startQuiz()">다시 테스트하기 🔄</button>' +
+    '<div class="footer">' + m.title + ' · 2026</div>';
+
+  show('result');
+  setTimeout(function() {
+    document.querySelectorAll('.trait-fill').forEach(function(f) {
+      f.style.width = f.getAttribute('data-pct') + '%';
+    });
+  }, 300);
+}
+
+function share() {
+  var url = DATA.meta.shareUrl;
+  if (navigator.share) {
+    navigator.share({ title: DATA.meta.title, url: url });
+  } else {
+    navigator.clipboard.writeText(url).then(function() {
+      var btn = document.querySelector('.btn-share');
+      btn.textContent = '링크 복사 완료! ✅';
+      setTimeout(function() { btn.textContent = '결과 공유하기 📤'; }, 2000);
+    });
+  }
+}
+
+init();
+</script>
+</body>
+</html>
