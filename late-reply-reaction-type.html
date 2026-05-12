@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>나는 어떻게 삐지는 타입?</title>
+  <meta property="og:title" content="나는 어떻게 삐지는 타입?" />
+  <meta property="og:description" content="답장 늦게 온 상대에게 반응하는 나의 방식 💬" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --card: #13131a;
+      --card-hover: #1a1a25;
+      --accent1: #7c5cfc;
+      --accent2: #ff6b9d;
+      --accent3: #00d4aa;
+      --accent4: #ffd166;
+      --text: #e8e6f0;
+      --text-dim: #8a879a;
+      --glass: rgba(124,92,252,0.08);
+      --border: rgba(124,92,252,0.15);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* orbs */
+    .bg-orbs { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+    .orb {
+      position: absolute; border-radius: 50%;
+      filter: blur(100px); opacity: 0.3;
+      animation: orbFloat 8s ease-in-out infinite;
+    }
+    .orb-1 { width: 400px; height: 400px; background: var(--accent1); top: -100px; left: -100px; }
+    .orb-2 { width: 350px; height: 350px; background: var(--accent2); bottom: -80px; right: -80px; animation-delay: -3s; }
+    .orb-3 { width: 300px; height: 300px; background: var(--accent3); top: 50%; left: 50%; transform: translate(-50%,-50%); animation-delay: -5s; opacity: 0.15; }
+    @keyframes orbFloat {
+      0%,100% { transform: translate(0,0) scale(1); }
+      33%      { transform: translate(30px,-20px) scale(1.05); }
+      66%      { transform: translate(-20px,30px) scale(0.95); }
+    }
+
+    .container {
+      position: relative; z-index: 1;
+      max-width: 520px; margin: 0 auto; padding: 20px;
+      min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+    }
+
+    /* screens */
+    .screen { display: none; animation: fadeUp 0.5s ease; }
+    .screen.active { display: flex; flex-direction: column; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── intro ── */
+    .intro-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--glass); border: 1px solid var(--border);
+      padding: 6px 14px; border-radius: 100px; font-size: 12px;
+      color: var(--accent1); width: fit-content; margin-bottom: 24px;
+      font-family: 'Outfit', sans-serif; letter-spacing: 0.5px;
+    }
+    .intro-badge .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent3); animation: blink 2s infinite;
+    }
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    .intro-emoji { font-size: 64px; margin-bottom: 20px; animation: bounceIn 0.6s ease; }
+
+    .intro-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 38px; font-weight: 800; line-height: 1.2; margin-bottom: 14px;
+      background: linear-gradient(135deg, #fff 0%, var(--accent1) 50%, var(--accent2) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .intro-desc {
+      font-size: 15px; color: var(--text-dim); line-height: 1.7; margin-bottom: 28px;
+    }
+    .intro-stats {
+      display: flex; gap: 10px; margin-bottom: 32px;
+    }
+    .stat {
+      flex: 1; background: var(--glass); border: 1px solid var(--border);
+      border-radius: 16px; padding: 16px; text-align: center;
+    }
+    .stat-num {
+      font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 700;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .stat-label { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+
+    .btn-start {
+      width: 100%; padding: 18px; border: none; border-radius: 16px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 17px; font-weight: 700; cursor: pointer;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      color: #fff; position: relative; overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+    .btn-start:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,92,252,0.4); }
+    .btn-start::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%);
+      transform: translateX(-100%); animation: shimmer 3s infinite;
+    }
+    @keyframes shimmer { 100% { transform: translateX(100%); } }
+
+    /* ── quiz ── */
+    .progress-wrap { margin-bottom: 28px; }
+    .progress-info {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+    }
+    .progress-label { font-family: 'Outfit', sans-serif; font-size: 13px; color: var(--text-dim); }
+    .progress-num   { font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700; color: var(--accent1); }
+    .progress-bar   { width: 100%; height: 6px; background: rgba(124,92,252,0.12); border-radius: 100px; overflow: hidden; }
+    .progress-fill  {
+      height: 100%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .q-emoji { font-size: 48px; margin-bottom: 14px; animation: bounceIn 0.5s ease; }
+    @keyframes bounceIn {
+      0%   { transform: scale(0); }
+      60%  { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    .q-text { font-size: 20px; font-weight: 700; line-height: 1.5; margin-bottom: 24px; }
+
+    .options { display: flex; flex-direction: column; gap: 12px; }
+    .opt-btn {
+      width: 100%; padding: 16px 20px;
+      border: 1px solid var(--border); border-radius: 14px;
+      background: var(--card); font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; color: var(--text); cursor: pointer;
+      text-align: left; transition: all 0.25s;
+      position: relative; overflow: hidden;
+    }
+    .opt-btn::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .opt-btn span { position: relative; z-index: 1; }
+    @media (hover: hover) {
+      .opt-btn:hover { border-color: var(--accent1); transform: translateX(6px); box-shadow: 0 4px 20px rgba(124,92,252,0.15); }
+      .opt-btn:hover::before { opacity: 0.12; }
+    }
+    .opt-btn:active { border-color: var(--accent1); transform: translateX(6px) scale(0.98); }
+    .opt-btn:active::before { opacity: 0.12; }
+
+    /* ── loading ── */
+    #loading { align-items: center; justify-content: center; text-align: center; min-height: 60vh; }
+    .loader-ring {
+      width: 80px; height: 80px; border-radius: 50%;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent1); border-right-color: var(--accent2);
+      animation: spin 1s linear infinite; margin-bottom: 28px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-emoji { font-size: 48px; margin-bottom: 20px; animation: blink 1.5s ease-in-out infinite; }
+    .loading-text { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+    .loading-sub   { font-size: 13px; color: var(--text-dim); margin-bottom: 32px; animation: blink 2s infinite; }
+    .loading-prog-bar {
+      width: 240px; height: 4px; background: rgba(124,92,252,0.15);
+      border-radius: 100px; overflow: hidden;
+    }
+    .loading-prog-fill {
+      height: 100%; width: 0%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      transition: width 2.3s cubic-bezier(0.4,0,0.6,1);
+    }
+
+    /* ── result ── */
+    #result { align-items: center; padding: 20px 0; }
+    .result-card {
+      width: 100%; border-radius: 24px; overflow: hidden;
+      background: var(--card); border: 1px solid var(--border); margin-bottom: 16px;
+    }
+    .result-hero {
+      padding: 40px 28px 24px; text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .result-hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      opacity: 0.08;
+    }
+    .result-type-badge {
+      display: inline-block; padding: 4px 14px; border-radius: 100px;
+      font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 600;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      background: rgba(255,255,255,0.1); color: var(--accent4);
+      margin-bottom: 12px; position: relative;
+    }
+    .result-emoji { font-size: 64px; margin-bottom: 12px; position: relative; }
+    .result-name {
+      font-family: 'Outfit', sans-serif; font-size: 28px; font-weight: 800;
+      position: relative;
+      background: linear-gradient(135deg, #fff, var(--accent1));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .result-subtitle { font-size: 13px; color: var(--text-dim); margin-top: 6px; position: relative; }
+
+    .result-body { padding: 24px 24px 28px; }
+    .result-desc { font-size: 14px; line-height: 1.8; color: var(--text-dim); margin-bottom: 24px; word-break: keep-all; }
+
+    .trait-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
+    .trait {
+      background: var(--glass); border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px; text-align: center;
+    }
+    .trait-icon { font-size: 22px; margin-bottom: 6px; }
+    .trait-name { font-size: 12px; font-weight: 600; color: var(--text); }
+    .trait-pct  { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+    .trait-bar  { margin-top: 8px; height: 4px; background: rgba(255,255,255,0.06); border-radius: 100px; overflow: hidden; }
+    .trait-fill {
+      height: 100%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent3));
+      transition: width 1.5s cubic-bezier(0.4,0,0.2,1); width: 0;
+    }
+
+    .compat-section { margin-bottom: 4px; }
+    .compat-title { font-size: 12px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+    .compat-row { display: flex; gap: 8px; }
+    .compat-tag { padding: 6px 14px; border-radius: 100px; font-size: 12px; background: var(--glass); border: 1px solid var(--border); }
+    .compat-tag.good { border-color: rgba(0,212,170,0.3); color: var(--accent3); }
+    .compat-tag.bad  { border-color: rgba(255,107,157,0.2); color: var(--accent2); }
+
+    .btn-share {
+      width: 100%; padding: 16px; border: none; border-radius: 14px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; font-weight: 700; cursor: pointer;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      color: #fff; margin-bottom: 10px;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+    .btn-share:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,92,252,0.4); }
+
+    .btn-retry {
+      width: 100%; padding: 16px; border: 1px solid var(--border);
+      border-radius: 14px; background: var(--card);
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; font-weight: 600; color: var(--text); cursor: pointer;
+      transition: all 0.25s;
+    }
+    .btn-retry:hover { border-color: var(--accent1); background: var(--card-hover); }
+
+    .footer { text-align: center; margin-top: 16px; font-size: 11px; color: var(--text-dim); opacity: 0.4; }
+  </style>
+</head>
+<body>
+
+<div class="bg-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<div class="container">
+
+  <!-- INTRO -->
+  <div class="screen active" id="intro">
+    <div class="intro-badge"><span class="dot"></span> <span id="intro-badge-text"></span></div>
+    <div class="intro-emoji" id="intro-emoji"></div>
+    <h1 class="intro-title" id="intro-title"></h1>
+    <p class="intro-desc" id="intro-desc"></p>
+    <div class="intro-stats">
+      <div class="stat"><div class="stat-num" id="stat-q"></div><div class="stat-label">질문</div></div>
+      <div class="stat"><div class="stat-num" id="stat-r"></div><div class="stat-label">유형</div></div>
+      <div class="stat"><div class="stat-num">2분</div><div class="stat-label">소요</div></div>
+    </div>
+    <button class="btn-start" onclick="startQuiz()">테스트 시작하기 →</button>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="screen" id="quiz">
+    <div class="progress-wrap">
+      <div class="progress-info">
+        <span class="progress-label">PROGRESS</span>
+        <span class="progress-num" id="prog-num">1 / 8</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
+    </div>
+    <div class="q-emoji" id="q-emoji"></div>
+    <div class="q-text"  id="q-text"></div>
+    <div class="options" id="options"></div>
+  </div>
+
+  <!-- LOADING -->
+  <div class="screen" id="loading">
+    <div class="loader-ring"></div>
+    <div class="loading-emoji" id="loading-emoji"></div>
+    <div class="loading-text">AI가 분석 중이에요...</div>
+    <div class="loading-sub">당신의 유형을 해독하는 중 🧬</div>
+    <div class="loading-prog-bar">
+      <div class="loading-prog-fill" id="loading-prog-fill"></div>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="screen" id="result"></div>
+
+</div>
+
+<script id="quiz-data" type="application/json">
+{
+  "meta": {
+    "title": "나는 어떻게 삐지는 타입?",
+    "subtitle": "답장 늦게 온 상대에게 반응하는 나의 방식 💬",
+    "badge": "2026 삐짐 유형 테스트",
+    "emoji": "💬",
+    "questionCount": 8,
+    "resultCount": 6,
+    "shareUrl": "https://self-persona-test.vercel.app/late-reply-reaction-type.html",
+    "resultBadge": "YOUR SULK PERSONA"
+  },
+
+  "scoreKeys": ["silent", "dramatic", "chill", "confrontational", "passive", "clingy", "analytical"],
+
+  "questions": [
+    {
+      "emoji": "📱",
+      "text": "상대방 답장이 3시간째 없다. 지금 내 상태는?",
+      "options": [
+        { "text": "😶 읽씹인지 확인하며 말수가 줄어듦", "scores": { "silent": 3, "passive": 1 } },
+        { "text": "😤 카톡 프사 확인 + 마지막 접속 시간 체크 중", "scores": { "clingy": 3, "analytical": 1 } },
+        { "text": "🤷 나도 바쁘니까~ 그냥 내 일 함", "scores": { "chill": 3, "analytical": 1 } },
+        { "text": "🎭 친구한테 '이거 봐봐 얘 왜 이래?' 공유 중", "scores": { "dramatic": 3, "confrontational": 1 } }
+      ]
+    },
+    {
+      "emoji": "💬",
+      "text": "드디어 답장이 왔다. 근데 이모티콘 하나랑 'ㅋㅋ'가 전부. 반응은?",
+      "options": [
+        { "text": "🙂 나도 'ㅇㅇ'로 짧게 받아침", "scores": { "silent": 3, "passive": 1 } },
+        { "text": "😑 '???' 세 개 보내고 기다림", "scores": { "confrontational": 3, "dramatic": 1 } },
+        { "text": "📊 이 사람 원래 답장 이런 스타일인지 분석 시작", "scores": { "analytical": 3, "chill": 1 } },
+        { "text": "😭 '나 무슨 잘못한 거 있어?' 바로 전송", "scores": { "clingy": 3, "dramatic": 1 } }
+      ]
+    },
+    {
+      "emoji": "🌙",
+      "text": "밤 10시에 '오늘 바빴어 ㅠ'라는 답장이 왔다면?",
+      "options": [
+        { "text": "😌 '그래~ 쉬어' 하고 진짜 별말 안 함", "scores": { "chill": 3, "silent": 1 } },
+        { "text": "🤔 '얼마나 바빴는데?' 하고 꼬리 질문", "scores": { "analytical": 3, "confrontational": 1 } },
+        { "text": "💔 '나한텐 5초도 없었어?' 마음속으로 되뇜", "scores": { "passive": 3, "clingy": 1 } },
+        { "text": "🗣️ '나도 바빴거든요~?' 살짝 어필", "scores": { "dramatic": 2, "confrontational": 2 } }
+      ]
+    },
+    {
+      "emoji": "😤",
+      "text": "삐진 게 티가 나는 편이야?",
+      "options": [
+        { "text": "🎭 완전 티남. 표정부터 달라짐", "scores": { "dramatic": 3, "confrontational": 1 } },
+        { "text": "🧊 겉으론 멀쩡한데 속으로 꽁꽁 얼어있음", "scores": { "silent": 3, "passive": 1 } },
+        { "text": "😇 진짜 별로 안 삐짐. 쿨한 척 아니고 진짜임", "scores": { "chill": 3, "analytical": 1 } },
+        { "text": "🔍 말투 살짝 바뀌는데 본인만 모름", "scores": { "passive": 2, "clingy": 2 } }
+      ]
+    },
+    {
+      "emoji": "📞",
+      "text": "상대가 '전화해도 돼?'라고 물어봤을 때 반응은?",
+      "options": [
+        { "text": "📵 '아니 괜찮아' 하고 문자로 끝냄", "scores": { "silent": 3, "passive": 1 } },
+        { "text": "😤 전화 받고 '뭐야 왜 이제 연락해'부터 시작", "scores": { "confrontational": 3, "dramatic": 1 } },
+        { "text": "📞 전화 받고 '에이 아무것도 아니야~' 웃으면서 넘김", "scores": { "chill": 2, "passive": 2 } },
+        { "text": "💬 '문자로 해줘' 하고 조금 더 뜸 들임", "scores": { "clingy": 2, "analytical": 2 } }
+      ]
+    },
+    {
+      "emoji": "🤝",
+      "text": "삐진 걸 상대가 눈치채고 '왜 그래?' 물어보면?",
+      "options": [
+        { "text": "😶 '아무것도 아니야' (진짜 아무것도 아님 아님)", "scores": { "silent": 3, "passive": 1 } },
+        { "text": "💥 '아니 솔직히 말하면~'하고 전부 털어놓음", "scores": { "confrontational": 3, "dramatic": 1 } },
+        { "text": "🤔 '그냥... 나중에 얘기하자'며 타이밍 봄", "scores": { "analytical": 2, "passive": 2 } },
+        { "text": "😭 '몰라도 돼' 하고 더 삐짐", "scores": { "dramatic": 2, "clingy": 2 } }
+      ]
+    },
+    {
+      "emoji": "💌",
+      "text": "상대가 긴 사과 문자를 보냈어. 어떻게 반응해?",
+      "options": [
+        { "text": "🧊 '응' 한 글자로 받아침 (아직 풀린 게 아님)", "scores": { "silent": 3, "passive": 1 } },
+        { "text": "😊 금방 풀려서 '에이 됐어~' 하고 웃음", "scores": { "chill": 3, "analytical": 1 } },
+        { "text": "📝 사과 문자 다시 읽으면서 진심인지 체크", "scores": { "analytical": 3, "clingy": 1 } },
+        { "text": "🥹 감동받아서 나도 '나도 미안해' 장문 전송", "scores": { "dramatic": 2, "clingy": 2 } }
+      ]
+    },
+    {
+      "emoji": "⏳",
+      "text": "삐진 게 얼마나 오래가는 편이야?",
+      "options": [
+        { "text": "⚡ 5분 컷. 금방 잊음", "scores": { "chill": 3, "analytical": 1 } },
+        { "text": "🌅 하루 이상. 자고 나면 좀 풀림", "scores": { "silent": 2, "passive": 2 } },
+        { "text": "♾️ 상대가 완전히 납득시켜야 풀림", "scores": { "confrontational": 2, "clingy": 2 } },
+        { "text": "😶 풀린 척하지만 마음속엔 남아있음", "scores": { "passive": 3, "silent": 1 } }
+      ]
+    }
+  ],
+
+  "results": {
+    "silent_passive": {
+      "emoji": "🧊",
+      "name": "냉동 모드 돌입러",
+      "sub": "Silent Freeze Mode",
+      "color": "#74c0fc",
+      "desc": "말은 안 하는데 태도가 다 말해주는 타입. '아무것도 아니야'를 입에 달고 살지만 문자 한 글자가 네 감정을 전부 설명하고 있어요. 상대가 눈치채주길 바라는 거, 사실 알고 있죠?",
+      "traits": [
+        { "icon": "🧊", "name": "냉각 속도", "pct": 95 },
+        { "icon": "😶", "name": "감정 봉인", "pct": 90 },
+        { "icon": "🔍", "name": "눈치 유발", "pct": 85 },
+        { "icon": "💬", "name": "직접 표현", "pct": 22 }
+      ],
+      "good": "직진 표현러",
+      "bad": "쿨한 척 분석러"
+    },
+    "dramatic_confrontational": {
+      "emoji": "🎭",
+      "name": "감정 폭죽러",
+      "sub": "Emotional Firework",
+      "color": "#ff6b9d",
+      "desc": "삐지면 온 우주가 알아야 하는 타입. 표정, 말투, 답장 속도까지 전부 삐짐 신호를 방송 중이에요. 오래 끌지 않고 폭발적으로 해결하는 게 오히려 건강한 방식일 수도 있어요.",
+      "traits": [
+        { "icon": "🎭", "name": "표현력", "pct": 95 },
+        { "icon": "💥", "name": "감정 폭발", "pct": 88 },
+        { "icon": "🗣️", "name": "직접성", "pct": 85 },
+        { "icon": "🧊", "name": "감정 봉인", "pct": 20 }
+      ],
+      "good": "냉동 모드 돌입러",
+      "bad": "쿨한 척 분석러"
+    },
+    "chill_analytical": {
+      "emoji": "😎",
+      "name": "쿨한 척 분석러",
+      "sub": "Cool Analyzer",
+      "color": "#00d4aa",
+      "desc": "겉으론 '나 괜찮아~' 하지만 속으론 상황을 조용히 분석 중인 타입. 감정보다 이성이 앞서서 쿨해 보이지만, 사실 혼자 꽤 많이 생각하고 있어요. 자기 감정을 좀 더 표현해도 괜찮아요.",
+      "traits": [
+        { "icon": "😎", "name": "쿨함", "pct": 92 },
+        { "icon": "🧠", "name": "분석력", "pct": 88 },
+        { "icon": "🌿", "name": "여유", "pct": 85 },
+        { "icon": "💔", "name": "감정 호소", "pct": 28 }
+      ],
+      "good": "냉동 모드 돌입러",
+      "bad": "감정 폭죽러"
+    },
+    "passive_clingy": {
+      "emoji": "🥺",
+      "name": "속앓이 집착러",
+      "sub": "Quiet Clinger",
+      "color": "#ffd166",
+      "desc": "말은 못 하면서 마음은 계속 붙잡고 있는 타입. '나 신경 써줘'를 직접 말 못 하고 접속 시간 체크로 대신 표현해요. 상대한테 솔직하게 말하면 훨씬 편해질 텐데, 아직 용기가 필요한 거 맞죠?",
+      "traits": [
+        { "icon": "🥺", "name": "감정 집착", "pct": 90 },
+        { "icon": "🔍", "name": "상태 체크", "pct": 88 },
+        { "icon": "💛", "name": "애정도", "pct": 92 },
+        { "icon": "🗣️", "name": "직접 표현", "pct": 25 }
+      ],
+      "good": "감정 폭죽러",
+      "bad": "쿨한 척 분석러"
+    },
+    "confrontational_analytical": {
+      "emoji": "🔎",
+      "name": "직진 표현러",
+      "sub": "Direct Expresser",
+      "color": "#ff9e7c",
+      "desc": "삐지면 그냥 말하는 타입. '왜 답장 늦었어?'를 당당하게 물어볼 수 있는 몇 안 되는 사람이에요. 감정을 숨기지 않아서 오해가 쌓이지 않고 관계가 오래가는 편이에요.",
+      "traits": [
+        { "icon": "🎯", "name": "직접성", "pct": 95 },
+        { "icon": "🔎", "name": "확인력", "pct": 88 },
+        { "icon": "💪", "name": "감정 처리", "pct": 85 },
+        { "icon": "🧘", "name": "참을성", "pct": 32 }
+      ],
+      "good": "쿨한 척 분석러",
+      "bad": "속앓이 집착러"
+    },
+    "dramatic_clingy": {
+      "emoji": "🌊",
+      "name": "감성 파도러",
+      "sub": "Emotional Wave Rider",
+      "color": "#c77dff",
+      "desc": "삐짐의 감정선이 드라마 OST처럼 흐르는 타입. 상대의 사과 문자 하나에 눈물이 차오르고, 긴 답장 하나에 세상이 다시 밝아져요. 감정이 풍부해서 관계가 깊어지는 타입이에요.",
+      "traits": [
+        { "icon": "🌊", "name": "감성 파도", "pct": 95 },
+        { "icon": "💜", "name": "애정 표현", "pct": 90 },
+        { "icon": "🎭", "name": "감정 깊이", "pct": 88 },
+        { "icon": "😎", "name": "쿨함", "pct": 20 }
+      ],
+      "good": "속앓이 집착러",
+      "bad": "직진 표현러"
+    }
+  },
+
+  "combos": {
+    "silent,passive": "silent_passive",
+    "passive,silent": "silent_passive",
+    "dramatic,confrontational": "dramatic_confrontational",
+    "confrontational,dramatic": "dramatic_confrontational",
+    "chill,analytical": "chill_analytical",
+    "analytical,chill": "chill_analytical",
+    "passive,clingy": "passive_clingy",
+    "clingy,passive": "passive_clingy",
+    "confrontational,analytical": "confrontational_analytical",
+    "analytical,confrontational": "confrontational_analytical",
+    "dramatic,clingy": "dramatic_clingy",
+    "clingy,dramatic": "dramatic_clingy",
+    "silent,dramatic": "silent_passive",
+    "dramatic,silent": "dramatic_confrontational",
+    "silent,chill": "chill_analytical",
+    "chill,silent": "chill_analytical",
+    "silent,confrontational": "silent_passive",
+    "confrontational,silent": "confrontational_analytical",
+    "silent,clingy": "passive_clingy",
+    "clingy,silent": "passive_clingy",
+    "silent,analytical": "chill_analytical",
+    "analytical,silent": "chill_analytical",
+    "dramatic,passive": "dramatic_confrontational",
+    "passive,dramatic": "passive_clingy",
+    "dramatic,chill": "dramatic_confrontational",
+    "chill,dramatic": "chill_analytical",
+    "dramatic,analytical": "dramatic_confrontational",
+    "analytical,dramatic": "confrontational_analytical",
+    "confrontational,passive": "confrontational_analytical",
+    "passive,confrontational": "passive_clingy",
+    "confrontational,chill": "confrontational_analytical",
+    "chill,confrontational": "chill_analytical",
+    "confrontational,clingy": "dramatic_clingy",
+    "clingy,confrontational": "dramatic_clingy",
+    "chill,passive": "chill_analytical",
+    "passive,chill": "passive_clingy",
+    "chill,clingy": "passive_clingy",
+    "clingy,chill": "passive_clingy",
+    "analytical,passive": "chill_analytical",
+    "passive,analytical": "passive_clingy",
+    "analytical,clingy": "passive_clingy",
+    "clingy,analytical": "passive_clingy",
+    "dramatic,passive,clingy": "dramatic_clingy"
+  }
+}
+</script>
+<script>
+var DATA = JSON.parse(document.getElementById('quiz-data').textContent);
+var currentQ = 0;
+var scores = {};
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+  var el = document.getElementById(id);
+  el.classList.add('active');
+  el.style.animation = 'none';
+  el.offsetHeight;
+  el.style.animation = '';
+}
+
+function init() {
+  var m = DATA.meta;
+  document.getElementById('intro-badge-text').textContent = m.badge;
+  document.getElementById('intro-emoji').textContent      = m.emoji;
+  document.getElementById('intro-title').textContent      = m.title;
+  document.getElementById('intro-desc').textContent       = m.subtitle;
+  document.getElementById('stat-q').textContent           = m.questionCount;
+  document.getElementById('stat-r').textContent           = m.resultCount;
+  document.getElementById('loading-emoji').textContent    = m.emoji;
+}
+
+function startQuiz() {
+  currentQ = 0;
+  scores = {};
+  DATA.scoreKeys.forEach(function(k) { scores[k] = 0; });
+  show('quiz');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  var q   = DATA.questions[currentQ];
+  var tot = DATA.questions.length;
+
+  document.getElementById('prog-num').textContent   = (currentQ + 1) + ' / ' + tot;
+  document.getElementById('prog-fill').style.width  = (currentQ / tot * 100) + '%';
+  document.getElementById('q-emoji').textContent    = q.emoji;
+  document.getElementById('q-text').textContent     = q.text;
+
+  var box = document.getElementById('options');
+  box.innerHTML = '';
+  q.options.forEach(function(opt, i) {
+    var btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerHTML = '<span>' + opt.text + '</span>';
+    btn.style.animationDelay = (i * 0.08) + 's';
+    btn.onclick = (function(s) { return function() { pick(s); }; })(opt.scores);
+    box.appendChild(btn);
+  });
+}
+
+function pick(scoreMap) {
+  Object.keys(scoreMap).forEach(function(k) { scores[k] = (scores[k] || 0) + scoreMap[k]; });
+  currentQ++;
+  if (currentQ < DATA.questions.length) {
+    renderQuestion();
+  } else {
+    document.getElementById('prog-fill').style.width = '100%';
+    setTimeout(function() {
+      show('loading');
+      var fill = document.getElementById('loading-prog-fill');
+      fill.style.width = '0%';
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+          fill.style.width = '100%';
+        });
+      });
+      setTimeout(showResult, 2400);
+    }, 300);
+  }
+}
+
+function showResult() {
+  var sorted = Object.keys(scores).map(function(k) { return [k, scores[k]]; });
+  sorted.sort(function(a, b) { return b[1] - a[1]; });
+  var top2key = [sorted[0][0], sorted[1][0]].sort().join(',');
+  var key = DATA.combos[top2key] || Object.keys(DATA.results)[0];
+  var res = DATA.results[key];
+  var m   = DATA.meta;
+
+  var el = document.getElementById('result');
+  var traitsHTML = '';
+  res.traits.forEach(function(t) {
+    traitsHTML +=
+      '<div class="trait">' +
+        '<div class="trait-icon">' + t.icon + '</div>' +
+        '<div class="trait-name">' + t.name + '</div>' +
+        '<div class="trait-pct">' + t.pct + '%</div>' +
+        '<div class="trait-bar"><div class="trait-fill" data-pct="' + t.pct + '"></div></div>' +
+      '</div>';
+  });
+
+  el.innerHTML =
+    '<div class="result-card">' +
+      '<div class="result-hero">' +
+        '<div class="result-type-badge">' + m.resultBadge + '</div>' +
+        '<div class="result-emoji">' + res.emoji + '</div>' +
+        '<div class="result-name">' + res.name + '</div>' +
+        '<div class="result-subtitle">' + res.sub + '</div>' +
+      '</div>' +
+      '<div class="result-body">' +
+        '<p class="result-desc">' + res.desc + '</p>' +
+        '<div class="trait-grid">' + traitsHTML + '</div>' +
+        '<div class="compat-section">' +
+          '<div class="compat-title">궁합</div>' +
+          '<div class="compat-row">' +
+            '<span class="compat-tag good">💚 ' + res.good + '</span>' +
+            '<span class="compat-tag bad">💔 ' + res.bad + '</span>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    '<button class="btn-share" onclick="share()">결과 공유하기 📤</button>' +
+    '<button class="btn-retry" onclick="startQuiz()">다시 테스트하기 🔄</button>' +
+    '<div class="footer">' + m.title + ' · 2026</div>';
+
+  show('result');
+  setTimeout(function() {
+    document.querySelectorAll('.trait-fill').forEach(function(f) {
+      f.style.width = f.getAttribute('data-pct') + '%';
+    });
+  }, 300);
+}
+
+function share() {
+  var url = DATA.meta.shareUrl;
+  if (navigator.share) {
+    navigator.share({ title: DATA.meta.title, url: url });
+  } else {
+    navigator.clipboard.writeText(url).then(function() {
+      var btn = document.querySelector('.btn-share');
+      btn.textContent = '링크 복사 완료! ✅';
+      setTimeout(function() { btn.textContent = '결과 공유하기 📤'; }, 2000);
+    });
+  }
+}
+
+init();
+</script>
+</body>
+</html>
