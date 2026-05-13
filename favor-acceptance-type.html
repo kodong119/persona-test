@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>남이 부탁하면 나는 어디까지 들어주는 타입?</title>
+  <meta property="og:title" content="남이 부탁하면 나는 어디까지 들어주는 타입?" />
+  <meta property="og:description" content="부탁 앞에서 드러나는 진짜 내 성격 🙏" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --card: #13131a;
+      --card-hover: #1a1a25;
+      --accent1: #7c5cfc;
+      --accent2: #ff6b9d;
+      --accent3: #00d4aa;
+      --accent4: #ffd166;
+      --text: #e8e6f0;
+      --text-dim: #8a879a;
+      --glass: rgba(124,92,252,0.08);
+      --border: rgba(124,92,252,0.15);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* orbs */
+    .bg-orbs { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+    .orb {
+      position: absolute; border-radius: 50%;
+      filter: blur(100px); opacity: 0.3;
+      animation: orbFloat 8s ease-in-out infinite;
+    }
+    .orb-1 { width: 400px; height: 400px; background: var(--accent1); top: -100px; left: -100px; }
+    .orb-2 { width: 350px; height: 350px; background: var(--accent2); bottom: -80px; right: -80px; animation-delay: -3s; }
+    .orb-3 { width: 300px; height: 300px; background: var(--accent3); top: 50%; left: 50%; transform: translate(-50%,-50%); animation-delay: -5s; opacity: 0.15; }
+    @keyframes orbFloat {
+      0%,100% { transform: translate(0,0) scale(1); }
+      33%      { transform: translate(30px,-20px) scale(1.05); }
+      66%      { transform: translate(-20px,30px) scale(0.95); }
+    }
+
+    .container {
+      position: relative; z-index: 1;
+      max-width: 520px; margin: 0 auto; padding: 20px;
+      min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+    }
+
+    /* screens */
+    .screen { display: none; animation: fadeUp 0.5s ease; }
+    .screen.active { display: flex; flex-direction: column; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── intro ── */
+    .intro-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--glass); border: 1px solid var(--border);
+      padding: 6px 14px; border-radius: 100px; font-size: 12px;
+      color: var(--accent1); width: fit-content; margin-bottom: 24px;
+      font-family: 'Outfit', sans-serif; letter-spacing: 0.5px;
+    }
+    .intro-badge .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent3); animation: blink 2s infinite;
+    }
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    .intro-emoji { font-size: 64px; margin-bottom: 20px; animation: bounceIn 0.6s ease; }
+
+    .intro-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 38px; font-weight: 800; line-height: 1.2; margin-bottom: 14px;
+      background: linear-gradient(135deg, #fff 0%, var(--accent1) 50%, var(--accent2) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .intro-desc {
+      font-size: 15px; color: var(--text-dim); line-height: 1.7; margin-bottom: 28px;
+    }
+    .intro-stats {
+      display: flex; gap: 10px; margin-bottom: 32px;
+    }
+    .stat {
+      flex: 1; background: var(--glass); border: 1px solid var(--border);
+      border-radius: 16px; padding: 16px; text-align: center;
+    }
+    .stat-num {
+      font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 700;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .stat-label { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+
+    .btn-start {
+      width: 100%; padding: 18px; border: none; border-radius: 16px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 17px; font-weight: 700; cursor: pointer;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      color: #fff; position: relative; overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+    .btn-start:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,92,252,0.4); }
+    .btn-start::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%);
+      transform: translateX(-100%); animation: shimmer 3s infinite;
+    }
+    @keyframes shimmer { 100% { transform: translateX(100%); } }
+
+    /* ── quiz ── */
+    .progress-wrap { margin-bottom: 28px; }
+    .progress-info {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+    }
+    .progress-label { font-family: 'Outfit', sans-serif; font-size: 13px; color: var(--text-dim); }
+    .progress-num   { font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700; color: var(--accent1); }
+    .progress-bar   { width: 100%; height: 6px; background: rgba(124,92,252,0.12); border-radius: 100px; overflow: hidden; }
+    .progress-fill  {
+      height: 100%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .q-emoji { font-size: 48px; margin-bottom: 14px; animation: bounceIn 0.5s ease; }
+    @keyframes bounceIn {
+      0%   { transform: scale(0); }
+      60%  { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    .q-text { font-size: 20px; font-weight: 700; line-height: 1.5; margin-bottom: 24px; }
+
+    .options { display: flex; flex-direction: column; gap: 12px; }
+    .opt-btn {
+      width: 100%; padding: 16px 20px;
+      border: 1px solid var(--border); border-radius: 14px;
+      background: var(--card); font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; color: var(--text); cursor: pointer;
+      text-align: left; transition: all 0.25s;
+      position: relative; overflow: hidden;
+    }
+    .opt-btn::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .opt-btn span { position: relative; z-index: 1; }
+    @media (hover: hover) {
+      .opt-btn:hover { border-color: var(--accent1); transform: translateX(6px); box-shadow: 0 4px 20px rgba(124,92,252,0.15); }
+      .opt-btn:hover::before { opacity: 0.12; }
+    }
+    .opt-btn:active { border-color: var(--accent1); transform: translateX(6px) scale(0.98); }
+    .opt-btn:active::before { opacity: 0.12; }
+
+    /* ── loading ── */
+    #loading { align-items: center; justify-content: center; text-align: center; min-height: 60vh; }
+    .loader-ring {
+      width: 80px; height: 80px; border-radius: 50%;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent1); border-right-color: var(--accent2);
+      animation: spin 1s linear infinite; margin-bottom: 28px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-emoji { font-size: 48px; margin-bottom: 20px; animation: blink 1.5s ease-in-out infinite; }
+    .loading-text { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+    .loading-sub   { font-size: 13px; color: var(--text-dim); margin-bottom: 32px; animation: blink 2s infinite; }
+    .loading-prog-bar {
+      width: 240px; height: 4px; background: rgba(124,92,252,0.15);
+      border-radius: 100px; overflow: hidden;
+    }
+    .loading-prog-fill {
+      height: 100%; width: 0%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      transition: width 2.3s cubic-bezier(0.4,0,0.6,1);
+    }
+
+    /* ── result ── */
+    #result { align-items: center; padding: 20px 0; }
+    .result-card {
+      width: 100%; border-radius: 24px; overflow: hidden;
+      background: var(--card); border: 1px solid var(--border); margin-bottom: 16px;
+    }
+    .result-hero {
+      padding: 40px 28px 24px; text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .result-hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      opacity: 0.08;
+    }
+    .result-type-badge {
+      display: inline-block; padding: 4px 14px; border-radius: 100px;
+      font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 600;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      background: rgba(255,255,255,0.1); color: var(--accent4);
+      margin-bottom: 12px; position: relative;
+    }
+    .result-emoji { font-size: 64px; margin-bottom: 12px; position: relative; }
+    .result-name {
+      font-family: 'Outfit', sans-serif; font-size: 28px; font-weight: 800;
+      position: relative;
+      background: linear-gradient(135deg, #fff, var(--accent1));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .result-subtitle { font-size: 13px; color: var(--text-dim); margin-top: 6px; position: relative; }
+
+    .result-body { padding: 24px 24px 28px; }
+    .result-desc { font-size: 14px; line-height: 1.8; color: var(--text-dim); margin-bottom: 24px; word-break: keep-all; }
+
+    .trait-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
+    .trait {
+      background: var(--glass); border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px; text-align: center;
+    }
+    .trait-icon { font-size: 22px; margin-bottom: 6px; }
+    .trait-name { font-size: 12px; font-weight: 600; color: var(--text); }
+    .trait-pct  { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+    .trait-bar  { margin-top: 8px; height: 4px; background: rgba(255,255,255,0.06); border-radius: 100px; overflow: hidden; }
+    .trait-fill {
+      height: 100%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent3));
+      transition: width 1.5s cubic-bezier(0.4,0,0.2,1); width: 0;
+    }
+
+    .compat-section { margin-bottom: 4px; }
+    .compat-title { font-size: 12px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+    .compat-row { display: flex; gap: 8px; }
+    .compat-tag { padding: 6px 14px; border-radius: 100px; font-size: 12px; background: var(--glass); border: 1px solid var(--border); }
+    .compat-tag.good { border-color: rgba(0,212,170,0.3); color: var(--accent3); }
+    .compat-tag.bad  { border-color: rgba(255,107,157,0.2); color: var(--accent2); }
+
+    .btn-share {
+      width: 100%; padding: 16px; border: none; border-radius: 14px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; font-weight: 700; cursor: pointer;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      color: #fff; margin-bottom: 10px;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+    .btn-share:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,92,252,0.4); }
+
+    .btn-retry {
+      width: 100%; padding: 16px; border: 1px solid var(--border);
+      border-radius: 14px; background: var(--card);
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; font-weight: 600; color: var(--text); cursor: pointer;
+      transition: all 0.25s;
+    }
+    .btn-retry:hover { border-color: var(--accent1); background: var(--card-hover); }
+
+    .footer { text-align: center; margin-top: 16px; font-size: 11px; color: var(--text-dim); opacity: 0.4; }
+  </style>
+</head>
+<body>
+
+<div class="bg-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<div class="container">
+
+  <!-- INTRO -->
+  <div class="screen active" id="intro">
+    <div class="intro-badge"><span class="dot"></span> <span id="intro-badge-text"></span></div>
+    <div class="intro-emoji" id="intro-emoji"></div>
+    <h1 class="intro-title" id="intro-title"></h1>
+    <p class="intro-desc" id="intro-desc"></p>
+    <div class="intro-stats">
+      <div class="stat"><div class="stat-num" id="stat-q"></div><div class="stat-label">질문</div></div>
+      <div class="stat"><div class="stat-num" id="stat-r"></div><div class="stat-label">유형</div></div>
+      <div class="stat"><div class="stat-num">2분</div><div class="stat-label">소요</div></div>
+    </div>
+    <button class="btn-start" onclick="startQuiz()">테스트 시작하기 →</button>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="screen" id="quiz">
+    <div class="progress-wrap">
+      <div class="progress-info">
+        <span class="progress-label">PROGRESS</span>
+        <span class="progress-num" id="prog-num">1 / 8</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
+    </div>
+    <div class="q-emoji" id="q-emoji"></div>
+    <div class="q-text"  id="q-text"></div>
+    <div class="options" id="options"></div>
+  </div>
+
+  <!-- LOADING -->
+  <div class="screen" id="loading">
+    <div class="loader-ring"></div>
+    <div class="loading-emoji" id="loading-emoji"></div>
+    <div class="loading-text">AI가 분석 중이에요...</div>
+    <div class="loading-sub">당신의 유형을 해독하는 중 🧬</div>
+    <div class="loading-prog-bar">
+      <div class="loading-prog-fill" id="loading-prog-fill"></div>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="screen" id="result"></div>
+
+</div>
+
+<script id="quiz-data" type="application/json">
+{
+  "meta": {
+    "title": "남이 부탁하면 나는 어디까지 들어주는 타입?",
+    "subtitle": "부탁 앞에서 드러나는 진짜 내 성격 🙏",
+    "badge": "2026 부탁 수용 유형 테스트",
+    "emoji": "🙏",
+    "questionCount": 8,
+    "resultCount": 6,
+    "shareUrl": "https://self-persona-test.vercel.app/favor-acceptance-type.html",
+    "resultBadge": "YOUR FAVOR TYPE"
+  },
+
+  "scoreKeys": ["pushover", "helper", "boundary", "calculator", "ghost", "assertive"],
+
+  "questions": [
+    {
+      "emoji": "📱",
+      "text": "친구가 갑자기 '나 이사하는데 도와줄 수 있어?' 라고 문자가 왔다. 나는?",
+      "options": [
+        { "text": "😇 '언제야? 내가 갈게!' 바로 OK", "scores": { "pushover": 3, "helper": 1 } },
+        { "text": "🤔 '내 스케줄 보고 알려줄게' 일단 확인", "scores": { "calculator": 3, "boundary": 1 } },
+        { "text": "💬 '가고 싶은데... 그날 선약이 있어서' 부드럽게 거절", "scores": { "boundary": 3, "assertive": 1 } },
+        { "text": "👀 읽고 바로 답장 안 하고 일단 숙성", "scores": { "ghost": 3, "calculator": 1 } }
+      ]
+    },
+    {
+      "emoji": "😅",
+      "text": "회사 동료가 '이거 내 업무는 아닌데... 혹시 네가 해줄 수 있어?' 라고 한다면?",
+      "options": [
+        { "text": "🫡 '아 네네 제가 할게요' 일단 수락", "scores": { "pushover": 3, "helper": 1 } },
+        { "text": "⚖️ '내가 해줬으면 나중에 나도 부탁 하나 해도 돼?' 협상 시도", "scores": { "calculator": 3, "assertive": 1 } },
+        { "text": "🙅 '그건 제 업무가 아닌 것 같아서요' 선 긋기", "scores": { "assertive": 3, "boundary": 1 } },
+        { "text": "🌀 '생각해볼게요...' 하고 그냥 흐지부지", "scores": { "ghost": 2, "pushover": 2 } }
+      ]
+    },
+    {
+      "emoji": "🍽️",
+      "text": "밥 메뉴 고를 때 친구가 '너는 뭐든 상관없지?' 라고 물으면?",
+      "options": [
+        { "text": "😊 '응 나는 아무거나!' (실제로 먹고 싶은 거 있음)", "scores": { "pushover": 3, "ghost": 1 } },
+        { "text": "🍜 '나는 이거 먹고 싶어! 너는?' 바로 의견 제시", "scores": { "assertive": 3, "boundary": 1 } },
+        { "text": "🤝 '같이 고르자~ 뭐 땡겨?' 같이 결정 유도", "scores": { "helper": 3, "calculator": 1 } },
+        { "text": "😶 '음... 아무거나...' 진짜로 상관없음", "scores": { "ghost": 3, "pushover": 1 } }
+      ]
+    },
+    {
+      "emoji": "💸",
+      "text": "지인이 '나 지금 좀 급한데 돈 10만원만 빌려줄 수 있어?' 라고 한다면?",
+      "options": [
+        { "text": "🏧 '응 내가 보내줄게' 일단 빌려줌", "scores": { "pushover": 3, "helper": 1 } },
+        { "text": "📅 '언제 갚아줄 수 있어? 그거 확인하고 보내줄게'", "scores": { "calculator": 3, "assertive": 1 } },
+        { "text": "😬 '나도 요즘 빠듯해서...' 사실이든 아니든 거절", "scores": { "boundary": 3, "ghost": 1 } },
+        { "text": "🙏 '미안, 돈 관계는 좀 불편해서 안 되겠어'", "scores": { "assertive": 3, "boundary": 1 } }
+      ]
+    },
+    {
+      "emoji": "🎤",
+      "text": "모임에서 갑자기 '야 네가 사회 봐줘!' 라고 떠밀리면?",
+      "options": [
+        { "text": "🎙️ '어... 그래 내가 할게' 어쩔 수 없이 수락", "scores": { "pushover": 3, "helper": 1 } },
+        { "text": "😎 '나 잘 못하는데 해볼게!' 오히려 즐김", "scores": { "helper": 3, "assertive": 1 } },
+        { "text": "😅 '나 진짜 못해... 다른 사람 시켜줘' 확실히 거절", "scores": { "boundary": 3, "assertive": 1 } },
+        { "text": "🚽 '잠깐 화장실 좀...' 하고 슬쩍 자리 피함", "scores": { "ghost": 3, "calculator": 1 } }
+      ]
+    },
+    {
+      "emoji": "🕐",
+      "text": "퇴근 직전에 상사가 '이거 오늘 안에 처리해줄 수 있어?' 라고 하면?",
+      "options": [
+        { "text": "💻 '네 알겠습니다' 하고 야근 돌입", "scores": { "pushover": 3, "helper": 1 } },
+        { "text": "🕵️ '어디까지 해야 하는 건지 범위 먼저 확인해도 될까요?'", "scores": { "calculator": 3, "assertive": 1 } },
+        { "text": "📋 '오늘은 어렵고 내일 오전 드려도 될까요?'", "scores": { "assertive": 3, "boundary": 1 } },
+        { "text": "😵 '아 네...' 하고 속으로 욕하며 처리", "scores": { "pushover": 2, "ghost": 2 } }
+      ]
+    },
+    {
+      "emoji": "🙃",
+      "text": "부탁을 거절했을 때 상대방이 실망한 표정을 지으면?",
+      "options": [
+        { "text": "😰 '아 내가 할게 내가 할게...' 바로 번복", "scores": { "pushover": 3, "ghost": 1 } },
+        { "text": "🤗 '미안해, 대신 이거는 내가 도와줄 수 있어!' 대안 제시", "scores": { "helper": 3, "calculator": 1 } },
+        { "text": "😐 '그래도 나는 안 되겠어' 입장 유지", "scores": { "assertive": 3, "boundary": 1 } },
+        { "text": "😶 죄책감 느끼면서도 애써 모른 척", "scores": { "ghost": 3, "boundary": 1 } }
+      ]
+    },
+    {
+      "emoji": "🌙",
+      "text": "새벽 1시에 친구한테 '나 지금 힘든데 나와줄 수 있어?' 연락이 오면?",
+      "options": [
+        { "text": "🚗 '지금 갈게!' 바로 나감 (내일 출근 있어도)", "scores": { "pushover": 2, "helper": 2 } },
+        { "text": "📞 '지금 나가긴 어려운데 전화 통화는 할 수 있어'", "scores": { "boundary": 2, "helper": 2 } },
+        { "text": "💬 '지금은 진짜 힘들어, 내일 낮에 보자'", "scores": { "assertive": 3, "boundary": 1 } },
+        { "text": "😴 이미 잠들어서 다음날 아침에 발견... 죄책감 폭발", "scores": { "ghost": 3, "calculator": 1 } }
+      ]
+    }
+  ],
+
+  "results": {
+    "pushover_helper": {
+      "emoji": "🫠",
+      "name": "거절 못하는 천사",
+      "sub": "The Eternal Yes-Sayer",
+      "color": "#ff6b9d",
+      "desc": "당신의 사전에 '싫어'는 없습니다. 부탁이 들어오면 일단 수락하고 나중에 후회하는 타입이에요. 착한 건 맞는데 가끔은 나를 먼저 챙겨도 괜찮다는 거 알죠?",
+      "traits": [
+        { "icon": "💖", "name": "친절함", "pct": 95 },
+        { "icon": "😰", "name": "거절력", "pct": 12 },
+        { "icon": "🫂", "name": "배려심", "pct": 90 },
+        { "icon": "🔋", "name": "내 에너지", "pct": 28 }
+      ],
+      "good": "든든한 지원군",
+      "bad": "냉철한 계산러"
+    },
+    "assertive_boundary": {
+      "emoji": "🦁",
+      "name": "선 긋기 장인",
+      "sub": "The Boundary Setter",
+      "color": "#00d4aa",
+      "desc": "할 수 있는 것과 없는 것이 명확한 당신. 거절할 때 죄책감 없이 쿨하게 말할 수 있는 몇 안 되는 유형이에요. 주변 사람들이 부러워하는 건강한 경계선 보유자입니다.",
+      "traits": [
+        { "icon": "🦁", "name": "단호함", "pct": 93 },
+        { "icon": "💬", "name": "의사표현", "pct": 90 },
+        { "icon": "🧘", "name": "자기존중", "pct": 88 },
+        { "icon": "🫂", "name": "희생력", "pct": 30 }
+      ],
+      "good": "냉철한 계산러",
+      "bad": "거절 못하는 천사"
+    },
+    "calculator_assertive": {
+      "emoji": "🧮",
+      "name": "냉철한 계산러",
+      "sub": "The Strategic Helper",
+      "color": "#c77dff",
+      "desc": "부탁을 들어줄지 말지 머릿속으로 빠르게 손익계산 하는 타입이에요. 감정보다 논리로 판단하다 보니 효율적이지만 가끔 차갑게 보이기도 해요. 그래도 한번 믿으면 끝까지 가는 스타일!",
+      "traits": [
+        { "icon": "🧮", "name": "계산력", "pct": 92 },
+        { "icon": "⚖️", "name": "판단력", "pct": 88 },
+        { "icon": "🎯", "name": "효율성", "pct": 85 },
+        { "icon": "💖", "name": "즉흥 친절", "pct": 35 }
+      ],
+      "good": "선 긋기 장인",
+      "bad": "거절 못하는 천사"
+    },
+    "helper_boundary": {
+      "emoji": "🤝",
+      "name": "든든한 지원군",
+      "sub": "The Steady Supporter",
+      "color": "#ffd166",
+      "desc": "도와주고 싶은 마음은 크지만 나를 잃지 않는 선에서 움직이는 균형 잡힌 타입이에요. '할 수 있는 만큼'이라는 기준이 있어서 번아웃이 적고 주변에서 신뢰받는 사람입니다.",
+      "traits": [
+        { "icon": "🤝", "name": "신뢰도", "pct": 92 },
+        { "icon": "💛", "name": "따뜻함", "pct": 88 },
+        { "icon": "🧘", "name": "균형감", "pct": 85 },
+        { "icon": "😤", "name": "결단력", "pct": 55 }
+      ],
+      "good": "거절 못하는 천사",
+      "bad": "유령 모드 발동러"
+    },
+    "ghost_calculator": {
+      "emoji": "👻",
+      "name": "유령 모드 발동러",
+      "sub": "The Phantom Avoider",
+      "color": "#7c5cfc",
+      "desc": "부탁이 들어오면 일단 읽씹... 결정을 미루고 상황이 알아서 정리되길 바라는 타입이에요. 거절하기 싫고 수락도 하기 싫어서 중간 어딘가에 숨어 있는 찐 MBTI 회피 유형입니다.",
+      "traits": [
+        { "icon": "👻", "name": "회피력", "pct": 92 },
+        { "icon": "😶", "name": "무감동", "pct": 75 },
+        { "icon": "🔕", "name": "잠수력", "pct": 88 },
+        { "icon": "💬", "name": "의사표현", "pct": 20 }
+      ],
+      "good": "냉철한 계산러",
+      "bad": "든든한 지원군"
+    },
+    "pushover_ghost": {
+      "emoji": "😮‍💨",
+      "name": "속앓이 수락러",
+      "sub": "The Silent Sufferer",
+      "color": "#ff9e7c",
+      "desc": "입으로는 '괜찮아'라고 하지만 속으로는 '왜 나한테 이걸 부탁해...'를 외치는 타입이에요. 거절 못해서 수락하고 나서 혼자 스트레스 쌓는 게 루틴이 돼버린 당신, 이제는 말해도 괜찮아요.",
+      "traits": [
+        { "icon": "😮‍💨", "name": "속앓이", "pct": 94 },
+        { "icon": "💖", "name": "착함", "pct": 90 },
+        { "icon": "🗣️", "name": "표현력", "pct": 22 },
+        { "icon": "🔋", "name": "정신력", "pct": 35 }
+      ],
+      "good": "든든한 지원군",
+      "bad": "선 긋기 장인"
+    }
+  },
+
+  "combos": {
+    "pushover,helper": "pushover_helper",
+    "helper,pushover": "pushover_helper",
+    "assertive,boundary": "assertive_boundary",
+    "boundary,assertive": "assertive_boundary",
+    "calculator,assertive": "calculator_assertive",
+    "assertive,calculator": "calculator_assertive",
+    "helper,boundary": "helper_boundary",
+    "boundary,helper": "helper_boundary",
+    "ghost,calculator": "ghost_calculator",
+    "calculator,ghost": "ghost_calculator",
+    "pushover,ghost": "pushover_ghost",
+    "ghost,pushover": "pushover_ghost",
+    "pushover,assertive": "pushover_ghost",
+    "assertive,pushover": "pushover_ghost",
+    "pushover,calculator": "pushover_ghost",
+    "calculator,pushover": "pushover_ghost",
+    "pushover,boundary": "pushover_helper",
+    "boundary,pushover": "pushover_helper",
+    "helper,assertive": "helper_boundary",
+    "assertive,helper": "helper_boundary",
+    "helper,calculator": "helper_boundary",
+    "calculator,helper": "calculator_assertive",
+    "helper,ghost": "pushover_helper",
+    "ghost,helper": "pushover_helper",
+    "boundary,calculator": "assertive_boundary",
+    "calculator,boundary": "calculator_assertive",
+    "boundary,ghost": "assertive_boundary",
+    "ghost,boundary": "ghost_calculator",
+    "assertive,ghost": "assertive_boundary",
+    "ghost,assertive": "ghost_calculator",
+    "calculator,calculator": "calculator_assertive",
+    "pushover,pushover": "pushover_helper",
+    "helper,helper": "helper_boundary",
+    "boundary,boundary": "assertive_boundary",
+    "ghost,ghost": "ghost_calculator",
+    "assertive,assertive": "assertive_boundary",
+    "calculator,helper": "calculator_assertive",
+    "ghost,calculator": "ghost_calculator",
+    "boundary,helper": "helper_boundary",
+    "assertive,boundary": "assertive_boundary",
+    "pushover,helper": "pushover_helper",
+    "helper,ghost": "pushover_helper",
+    "calculator,assertive": "calculator_assertive"
+  }
+}
+</script>
+<script>
+var DATA = JSON.parse(document.getElementById('quiz-data').textContent);
+var currentQ = 0;
+var scores = {};
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+  var el = document.getElementById(id);
+  el.classList.add('active');
+  el.style.animation = 'none';
+  el.offsetHeight;
+  el.style.animation = '';
+}
+
+function init() {
+  var m = DATA.meta;
+  document.getElementById('intro-badge-text').textContent = m.badge;
+  document.getElementById('intro-emoji').textContent      = m.emoji;
+  document.getElementById('intro-title').textContent      = m.title;
+  document.getElementById('intro-desc').textContent       = m.subtitle;
+  document.getElementById('stat-q').textContent           = m.questionCount;
+  document.getElementById('stat-r').textContent           = m.resultCount;
+  document.getElementById('loading-emoji').textContent    = m.emoji;
+}
+
+function startQuiz() {
+  currentQ = 0;
+  scores = {};
+  DATA.scoreKeys.forEach(function(k) { scores[k] = 0; });
+  show('quiz');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  var q   = DATA.questions[currentQ];
+  var tot = DATA.questions.length;
+
+  document.getElementById('prog-num').textContent   = (currentQ + 1) + ' / ' + tot;
+  document.getElementById('prog-fill').style.width  = (currentQ / tot * 100) + '%';
+  document.getElementById('q-emoji').textContent    = q.emoji;
+  document.getElementById('q-text').textContent     = q.text;
+
+  var box = document.getElementById('options');
+  box.innerHTML = '';
+  q.options.forEach(function(opt, i) {
+    var btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerHTML = '<span>' + opt.text + '</span>';
+    btn.style.animationDelay = (i * 0.08) + 's';
+    btn.onclick = (function(s) { return function() { pick(s); }; })(opt.scores);
+    box.appendChild(btn);
+  });
+}
+
+function pick(scoreMap) {
+  Object.keys(scoreMap).forEach(function(k) { scores[k] = (scores[k] || 0) + scoreMap[k]; });
+  currentQ++;
+  if (currentQ < DATA.questions.length) {
+    renderQuestion();
+  } else {
+    document.getElementById('prog-fill').style.width = '100%';
+    setTimeout(function() {
+      show('loading');
+      var fill = document.getElementById('loading-prog-fill');
+      fill.style.width = '0%';
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+          fill.style.width = '100%';
+        });
+      });
+      setTimeout(showResult, 2400);
+    }, 300);
+  }
+}
+
+function showResult() {
+  var sorted = Object.keys(scores).map(function(k) { return [k, scores[k]]; });
+  sorted.sort(function(a, b) { return b[1] - a[1]; });
+  var top2key = [sorted[0][0], sorted[1][0]].sort().join(',');
+  var key = DATA.combos[top2key] || Object.keys(DATA.results)[0];
+  var res = DATA.results[key];
+  var m   = DATA.meta;
+
+  var el = document.getElementById('result');
+  var traitsHTML = '';
+  res.traits.forEach(function(t) {
+    traitsHTML +=
+      '<div class="trait">' +
+        '<div class="trait-icon">' + t.icon + '</div>' +
+        '<div class="trait-name">' + t.name + '</div>' +
+        '<div class="trait-pct">' + t.pct + '%</div>' +
+        '<div class="trait-bar"><div class="trait-fill" data-pct="' + t.pct + '"></div></div>' +
+      '</div>';
+  });
+
+  el.innerHTML =
+    '<div class="result-card">' +
+      '<div class="result-hero">' +
+        '<div class="result-type-badge">' + m.resultBadge + '</div>' +
+        '<div class="result-emoji">' + res.emoji + '</div>' +
+        '<div class="result-name">' + res.name + '</div>' +
+        '<div class="result-subtitle">' + res.sub + '</div>' +
+      '</div>' +
+      '<div class="result-body">' +
+        '<p class="result-desc">' + res.desc + '</p>' +
+        '<div class="trait-grid">' + traitsHTML + '</div>' +
+        '<div class="compat-section">' +
+          '<div class="compat-title">궁합</div>' +
+          '<div class="compat-row">' +
+            '<span class="compat-tag good">💚 ' + res.good + '</span>' +
+            '<span class="compat-tag bad">💔 ' + res.bad + '</span>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    '<button class="btn-share" onclick="share()">결과 공유하기 📤</button>' +
+    '<button class="btn-retry" onclick="startQuiz()">다시 테스트하기 🔄</button>' +
+    '<div class="footer">' + m.title + ' · 2026</div>';
+
+  show('result');
+  setTimeout(function() {
+    document.querySelectorAll('.trait-fill').forEach(function(f) {
+      f.style.width = f.getAttribute('data-pct') + '%';
+    });
+  }, 300);
+}
+
+function share() {
+  var url = DATA.meta.shareUrl;
+  if (navigator.share) {
+    navigator.share({ title: DATA.meta.title, url: url });
+  } else {
+    navigator.clipboard.writeText(url).then(function() {
+      var btn = document.querySelector('.btn-share');
+      btn.textContent = '링크 복사 완료! ✅';
+      setTimeout(function() { btn.textContent = '결과 공유하기 📤'; }, 2000);
+    });
+  }
+}
+
+init();
+</script>
+</body>
+</html>
